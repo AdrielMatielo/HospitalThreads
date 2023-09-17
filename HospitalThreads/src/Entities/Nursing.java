@@ -1,33 +1,72 @@
 package Entities;
 
-import java.util.Random;
-import java.util.concurrent.Semaphore;
+public class Nursing extends Patient{
 
-public class Nursing extends Thread {
-    private Semaphore semaforoNebulizadores;
-    private int numNebulizadores;
-    private boolean ativo = true;
-
-    public Nursing(Semaphore semaforoNebulizadores, int numNebulizadores) {
-        this.semaforoNebulizadores = semaforoNebulizadores;
-        this.numNebulizadores = numNebulizadores;
+    public int getID(Patient patient) {
+        return patient.getID();
     }
 
-    public void encerrar() {
-        ativo = false;
+    public int getAge(Patient patient) {
+        return patient.getAge();
     }
 
-    @Override
-    public void run() {
-        Random random = new Random();
-
-        while (ativo) {
-            try {
-                Thread.sleep(random.nextInt(3000) + 1000); // Tempo de nebulização aleatório (1 a 4 segundos)
-                semaforoNebulizadores.release(numNebulizadores); // Libera os nebulizadores
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+    public String getFirstName(Patient patient) {
+        return patient.getFirstName();
     }
+
+    public String getSurname(Patient patient) {
+        return patient.getSurname();
+    }
+
+    public int getHeartRate(Patient patient) {
+        return patient.getHeartRate();
+    }
+
+    public int getBloodPressureMax(Patient patient) {
+        return patient.getBloodPressureMax();
+    }
+
+    public int getBloodPressureMin(Patient patient) {
+        return patient.getBloodPressureMin();
+    }
+
+    public float getBodyTemperature(Patient patient) {
+        return patient.getBodyTemperature();
+    }
+
+    public int getRespiratoryFrequency(Patient patient) {
+        return patient.getRespiratoryFrequency();
+    }
+
+    public int getHeartPoint(Patient patient) {
+        if(patient.getHeartPoint() < 7)
+            notifyHeadNursing(patient);
+        return patient.getHeartPoint();
+    }
+
+    private void notifyHeadNursing(Patient patient) {
+        HeadNursing.attention(patient);
+    }
+
+    public boolean isPatientAlive(Patient patient){
+        return patient.isPatientAlive();
+    }
+
+    public int getNebulizerTimesUsed(Patient patient) {
+        return patient.getNebulizerTimesUsed();
+    }
+
+    public String medicalRecord(Patient patient){
+        return  " || ID: "+getID(patient)+
+                " || NEME: "+getFirstName(patient)+
+                " || SURNAME: "+getSurname(patient)+
+                " || AGE: "+getAge(patient)+
+                " || HEART RATE: "+getHeartRate(patient)+
+                " || BLOOD PRESSURE: "+getBloodPressureMax(patient)+"/"+getBloodPressureMin(patient)+
+                " || BODY TEMPERATURE: "+getBodyTemperature(patient)+
+                " || RESPITAROTY FREQUENCY: "+getRespiratoryFrequency(patient)+
+                " || HEART POINT: "+getHeartPoint(patient)+
+                " || TIMES USED NEBULIZER: "+getNebulizerTimesUsed(patient);
+    }
+
 }

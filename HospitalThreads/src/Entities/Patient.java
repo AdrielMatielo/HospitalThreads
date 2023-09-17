@@ -50,54 +50,57 @@ public class Patient extends Thread {
         this.MIN_NEBULIZE_TIME = MIN_NEBULIZE_TIME;
     }
 
-    public int getID() {
+    public Patient() {
+    }
+
+    protected int getID() {
         return ID;
     }
 
-    public int getAge() {
+    protected int getAge() {
         return age;
     }
 
-    public String getFirstName() {
+    protected String getFirstName() {
         return FirstName;
     }
 
-    public String getSurname() {
+    protected String getSurname() {
         return surname;
     }
 
-    public int getHeartRate() {
+    protected int getHeartRate() {
         return heartRate;
     }
 
-    public int getBloodPressureMax() {
+    protected int getBloodPressureMax() {
         return bloodPressureMax;
     }
 
-    public int getBloodPressureMin() {
+    protected int getBloodPressureMin() {
         return bloodPressureMin;
     }
 
-    public float getBodyTemperature() {
+    protected float getBodyTemperature() {
         return bodyTemperature;
     }
 
-    public int getRespiratoryFrequency() {
+    protected int getRespiratoryFrequency() {
         return respiratoryFrequency;
     }
 
-    public int getHeatPoint() {
+    protected int getHeartPoint() {
         return heartPoint;
     }
 
-    public boolean isUndergoinTreatment() {
+    protected boolean isUndergoinTreatment() {
         return onNebulizer;
     }
-    public boolean isPatientAlive(){
+    protected boolean isPatientAlive(){
         return alive;
     }
 
-    public int getNebulizerTimesUsed() {
+    protected int getNebulizerTimesUsed() {
         return nebulizerTimesUsed;
     }
 
