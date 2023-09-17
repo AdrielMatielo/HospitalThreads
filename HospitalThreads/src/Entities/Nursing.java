@@ -5,42 +5,33 @@ public class Nursing extends Patient{
     public int getID(Patient patient) {
         return patient.getID();
     }
-
     public int getAge(Patient patient) {
         return patient.getAge();
     }
-
     public String getFirstName(Patient patient) {
         return patient.getFirstName();
     }
-
     public String getSurname(Patient patient) {
         return patient.getSurname();
     }
-
     public int getHeartRate(Patient patient) {
         return patient.getHeartRate();
     }
-
     public int getBloodPressureMax(Patient patient) {
         return patient.getBloodPressureMax();
     }
-
     public int getBloodPressureMin(Patient patient) {
         return patient.getBloodPressureMin();
     }
-
     public float getBodyTemperature(Patient patient) {
         return patient.getBodyTemperature();
     }
-
     public int getRespiratoryFrequency(Patient patient) {
         return patient.getRespiratoryFrequency();
     }
-
     public int getHeartPoint(Patient patient) {
         if(patient.getHeartPoint() < 7)
-            notifyHeadNursing(patient);
+            headNursing.notify(patient);
         return patient.getHeartPoint();
     }
 
@@ -48,12 +39,12 @@ public class Nursing extends Patient{
         HeadNursing.attention(patient);
     }
 
-    public boolean isPatientAlive(Patient patient){
-        return patient.isPatientAlive();
-    }
-
     public int getNebulizerTimesUsed(Patient patient) {
         return patient.getNebulizerTimesUsed();
+    }
+
+    public boolean isPatientAlive(Patient patient){
+        return patient.isPatientAlive();
     }
 
     public String medicalRecord(Patient patient){
@@ -66,7 +57,8 @@ public class Nursing extends Patient{
                 " || BODY TEMPERATURE: "+getBodyTemperature(patient)+
                 " || RESPITAROTY FREQUENCY: "+getRespiratoryFrequency(patient)+
                 " || HEART POINT: "+getHeartPoint(patient)+
-                " || TIMES USED NEBULIZER: "+getNebulizerTimesUsed(patient);
+                " || TIMES USED NEBULIZER: "+getNebulizerTimesUsed(patient)+
+                " ||";
     }
 
 }

@@ -21,8 +21,8 @@ public class Patient extends Thread {
     private boolean onNebulizer; //Nebulizer in use
     private int nebulizerTimesUsed;  //For register
     private boolean active; //active thread
-    private long INTERVAL;
-    private boolean alive;
+    private long INTERVAL; //time for increase/decrease HP
+    private boolean alive; //if dead need wait Nursin remove of simulation
     private int MAX_NEBULIZE_TIME;
     private int MIN_NEBULIZE_TIME;
 
@@ -48,62 +48,54 @@ public class Patient extends Thread {
         this.INTERVAL = INTERVAL;
         this.MAX_NEBULIZE_TIME = MAX_NEBULIZE_TIME;
         this.MIN_NEBULIZE_TIME = MIN_NEBULIZE_TIME;
-    }
 
+    }
     public Patient() {
+        this.ID = nextID;
+        nextID++;
     }
 
     protected int getID() {
         return ID;
     }
-
     protected int getAge() {
         return age;
     }
-
     protected String getFirstName() {
         return FirstName;
     }
-
     protected String getSurname() {
         return surname;
     }
-
     protected int getHeartRate() {
         return heartRate;
     }
-
     protected int getBloodPressureMax() {
         return bloodPressureMax;
     }
-
     protected int getBloodPressureMin() {
         return bloodPressureMin;
     }
-
     protected float getBodyTemperature() {
         return bodyTemperature;
     }
-
     protected int getRespiratoryFrequency() {
         return respiratoryFrequency;
     }
-
     protected int getHeartPoint() {
         return heartPoint;
     }
-
     protected boolean isUndergoinTreatment() {
         return onNebulizer;
     }
     protected boolean isPatientAlive(){
         return alive;
     }
-
     protected int getNebulizerTimesUsed() {
         return nebulizerTimesUsed;
     }
 
+    //Principal function
     @Override
     public void run() {
 
@@ -122,7 +114,6 @@ public class Patient extends Thread {
                 if (heartPoint < 0) {
                     heartPoint = 0;
                 }
-
             }
 
             try {
