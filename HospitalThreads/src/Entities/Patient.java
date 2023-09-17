@@ -7,141 +7,127 @@ import java.util.Random;
 import java.util.concurrent.Semaphore;
 
 public class Patient extends Thread {
-    private int numero;
-    private int idade;
-    private String nome;
-    private String sobrenome;
-    private int sinalVital;
-    private boolean emTratamento;
-    private int vezesNebulizadorUtilizado;
-    private long tempoTotalAtendimento;
+    private static int nextID = 1;
+    private int ID; //> 100 ID patient for tracking | sequential
+    private int age;    //18yo ~ 65yo | Random
+    private String FirstName;    //enum | Random
+    private String surname; // enum | Random
+    private int heartRate;  //60~100 bpm | Random
+    private int bloodPressureMax;   //90~120mmHg | Random
+    private int bloodPressureMin;   //60~80mmHg | Random
+    private float bodyTemperature;  //35,5~37,0ºC |Random
+    private int respiratoryFrequency;   //12~20 rpm | Random
+    private int heartPoint;  //8~10HP (initial)| Random; -1HP (death) || without tratment patient loses 1 or 2 HP randomly || undergoinTratment receives 2 or 4 HP randomly
+    private boolean onNebulizer; //Nebulizer in use
+    private int nebulizerTimesUsed;  //For register
+    private boolean active; //active thread
+    private long INTERVAL;
+    private boolean alive;
+    private int MAX_NEBULIZE_TIME;
+    private int MIN_NEBULIZE_TIME;
 
-    private Semaphore semaforoNebulizadores;
-    private Semaphore semaforoSalaEspera;
+    Random random = new Random();
 
+    public Patient(long INTERVAL, int MAX_NEBULIZE_TIME, int MIN_NEBULIZE_TIME) {
+        this.ID = nextID;
+        nextID++;
+        this.age = random.nextInt(48)+18; //18~65yo
+        this.FirstName = String.valueOf(random.nextInt(Names.values().length));
+        this.surname = String.valueOf(random.nextInt(Surname.values().length));
+        this.heartRate = random.nextInt(41)+60;  //60~100 bpm
+        this.bloodPressureMax = random.nextInt(31)+90;   //90~120
+        this.bloodPressureMin = random.nextInt(21)+60;   //60~80
+        this.bodyTemperature= random.nextFloat(2.5F)+35.5F;  //35,5~37,0ºC
+        this.respiratoryFrequency = random.nextInt(9)+12;   //12~20rpm
+        this.heartPoint = random.nextInt(3)+8;  //8~10HP
+        this.onNebulizer = false;
+        this.nebulizerTimesUsed = 0;
+        this.active = true;
+        this.alive = true;
 
-    private static boolean simulacaoAtiva = true;
-    private static int pacientesAtendidos = 0;
-    private static int pacientesMortos = 0;
-    private static int pacientesEncaminhados = 0;
-
-    public Patient(int numero, int idade, Semaphore semaforoNebulizadores, Semaphore semaforoSalaEspera) {
-        Random random = new Random();
-        this.numero = numero;
-        this.idade = idade;
-        this.nome = String.valueOf(random.nextInt(100));
-        this.sobrenome =  String.valueOf(random.nextInt(100));
-        this.sinalVital = random.nextInt(3)+8;
-        this.emTratamento = false;
-        this.vezesNebulizadorUtilizado = 0;
-        this.tempoTotalAtendimento = 0;
-        this.semaforoNebulizadores = semaforoNebulizadores;
-        this.semaforoSalaEspera = semaforoSalaEspera;
+        this.INTERVAL = INTERVAL;
+        this.MAX_NEBULIZE_TIME = MAX_NEBULIZE_TIME;
+        this.MIN_NEBULIZE_TIME = MIN_NEBULIZE_TIME;
     }
 
-    public static void encerrarSimulacao() {
-        simulacaoAtiva = false;
+    public int getID() {
+        return ID;
     }
 
-    public static int getPacientesAtendidos() {
-        return pacientesAtendidos;
+    public int getAge() {
+        return age;
     }
 
-    public static int getPacientesMortos() {
-        return pacientesMortos;
+    public String getFirstName() {
+        return FirstName;
     }
 
-    public static int getPacientesEncaminhados() {
-        return pacientesEncaminhados;
+    public String getSurname() {
+        return surname;
+    }
+
+    public int getHeartRate() {
+        return heartRate;
+    }
+
+    public int getBloodPressureMax() {
+        return bloodPressureMax;
+    }
+
+    public int getBloodPressureMin() {
+        return bloodPressureMin;
+    }
+
+    public float getBodyTemperature() {
+        return bodyTemperature;
+    }
+
+    public int getRespiratoryFrequency() {
+        return respiratoryFrequency;
+    }
+
+    public int getHeatPoint() {
+        return heartPoint;
+    }
+
+    public boolean isUndergoinTreatment() {
+        return onNebulizer;
+    }
+    public boolean isPatientAlive(){
+        return alive;
+    }
+
+    public int getNebulizerTimesUsed() {
+        return nebulizerTimesUsed;
     }
 
     @Override
     public void run() {
-        long tempoInicioAtendimento = System.currentTimeMillis();
 
-        while (simulacaoAtiva) {
-            // Paciente aguarda na sala de espera se não houver espaço na sala de nebulização
-            try {
-                semaforoSalaEspera.acquire();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+        while (active) {
+            if(heartPoint == 0)
+                alive = false;
 
-            // Paciente tenta adquirir um nebulizador
-            try {
-                semaforoNebulizadores.acquire();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            // Paciente inicia o tratamento com o nebulizador
-            emTratamento = true;
-            vezesNebulizadorUtilizado++;
-
-            // Simula o uso do nebulizador e as mudanças nos sinais vitais
-            simularTratamento();
-
-            // Paciente libera o nebulizador e deixa a sala de nebulização
-            emTratamento = false;
-            semaforoNebulizadores.release();
-            semaforoSalaEspera.release();
-
-            // Calcula o tempo total de atendimento
-            tempoTotalAtendimento += System.currentTimeMillis() - tempoInicioAtendimento;
-
-            // Verifica o estado do paciente
-            if (sinalVital <= 0) {
-                pacientesMortos++;
-                break;
-            }
-
-            if (idade >= 60) {
-                pacientesAtendidos++;
-                break;
-            }
-
-            if (idade < 60 && tempoTotalAtendimento >= 20000) {
-                pacientesAtendidos++;
-                break;
-            }
-        }
-
-        // Verifica se o paciente foi encaminhado para outro hospital
-        if (!simulacaoAtiva) {
-            pacientesEncaminhados++;
-        }
-    }
-
-    private void simularTratamento() {
-        Random random = new Random();
-        int intervalo = random.nextInt(4000) + 1000; // Intervalo aleatório entre 1 e 5 segundos
-
-        while (emTratamento) {
-            try {
-                Thread.sleep(intervalo);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            if (emTratamento) {
-                // Simula a melhoria nos sinais vitais durante o tratamento
-                sinalVital += random.nextInt(3) + 2; // Aumento de 2 a 4 níveis
-                if (sinalVital > 10) {
-                    sinalVital = 10;
+            if(onNebulizer && alive){
+                nebulizerTimesUsed++;
+                heartPoint += random.nextInt(3) + 2; // increase 2 ~ 4 heartPoint
+                if (heartPoint > 10) {
+                    heartPoint = 10;
+                }
+            }else{
+                heartPoint -= random.nextInt(2) + 1; // decrease de 1-2 heartPoint
+                if (heartPoint < 0) {
+                    heartPoint = 0;
                 }
 
-                // Simula a deterioração dos sinais vitais quando não está em tratamento
-                sinalVital -= random.nextInt(2) + 1; // Redução de 1 a 2 níveis
-                if (sinalVital <= 0) {
-                    sinalVital = 0;
-                    break;
-                }
+            }
+
+            try {
+                Thread.sleep(INTERVAL);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
-    }
-
-    public static synchronized void atendimentoMedico() {
-        //notifyAll();
     }
 
 }
